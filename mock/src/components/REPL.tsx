@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import '../styles/main.css';
-import { REPLHistory } from './REPLHistory';
-import { REPLInput } from './REPLInput';
+import { useState } from "react";
+import "../styles/main.css";
+import { REPLHistory } from "./REPLHistory";
+import { REPLInput } from "./REPLInput";
 
 /* 
   You'll want to expand this component (and others) for the sprints! Remember 
@@ -14,17 +14,41 @@ import { REPLInput } from './REPLInput';
 
 export default function REPL() {
   // TODO: Add some kind of shared state that holds all the commands submitted.
-  const [history, setHistory] = useState<string[]>([])
+  const [history, setHistory] = useState<string[]>([]);
+  const [outputMode, setOutputMode] = useState<"brief" | "verbose">("brief");
 
+  // Function to process commands
+  const processCommand = (command: string) => {
+    let output = "";
+    if (command.startsWith("mode ")) {
+      const newMode = command.split(" ")[1];
+      if (newMode === "brief" || newMode === "verbose") {
+        setOutputMode(newMode); // Update the mode as requested by the command
+        output = `Output mode set to ${newMode}`;
+      } else {
+        output = "Invalid mode. Available modes are 'brief' and 'verbose'.";
+      }
+    } else {
+      output = `${command}`;
+    }
+
+    const commandOutput =
+      outputMode === "verbose"
+        ? `Command: ${command}\nOutput: ${output}`
+        : output;
+    setHistory([...history, commandOutput]);
+  };
 
   return (
-    <div className="repl">  
+    <div className="repl">
       {/*This is where your REPLHistory might go... You also may choose to add it within your REPLInput 
       component or somewhere else depending on your component organization. What are the pros and cons of each? */}
       {/* TODO: Update your REPLHistory and REPLInput to take in new shared state as props */}
-      <REPLHistory history={history}/>
+      <REPLHistory history={history} />
       <hr></hr>
-      <REPLInput history = {history} setHistory={setHistory}/>
+      
+      {/*<REPLInput history={history} setHistory={setHistory} />*/}
+      <REPLInput processCommand={processCommand} />
     </div>
   );
 }
