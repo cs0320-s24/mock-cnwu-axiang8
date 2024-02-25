@@ -1,8 +1,10 @@
 import { useState } from "react";
 import "../styles/main.css";
+import { CommandProcessor } from "./CommandSystem";
 import { REPLHistory } from "./REPLHistory";
 import { REPLInput } from "./REPLInput";
 
+const commandProcessor = new CommandProcessor();
 /* 
   You'll want to expand this component (and others) for the sprints! Remember 
   that you can pass "props" as function arguments. If you need to handle state 
@@ -14,29 +16,16 @@ import { REPLInput } from "./REPLInput";
 
 export default function REPL() {
   // TODO: Add some kind of shared state that holds all the commands submitted.
-  const [history, setHistory] = useState<string[]>([]);
+  const [history, setHistory] = useState<Array<String>>([]);
+
   const [outputMode, setOutputMode] = useState<"brief" | "verbose">("brief");
 
   // Function to process commands
-  const processCommand = (command: string) => {
-    let output = "";
-    if (command.startsWith("mode ")) {
-      const newMode = command.split(" ")[1];
-      if (newMode === "brief" || newMode === "verbose") {
-        setOutputMode(newMode); // Update the mode as requested by the command
-        output = `Output mode set to ${newMode}`;
-      } else {
-        output = "Invalid mode. Available modes are 'brief' and 'verbose'.";
-      }
-    } else {
-      output = `${command}`;
-    }
+  const processCommand = (commandString: string) => {
+    const output = commandProcessor.processCommand(commandString);
 
-    const commandOutput =
-      outputMode === "verbose"
-        ? `Command: ${command}\nOutput: ${output}`
-        : output;
-    setHistory([...history, commandOutput]);
+    
+    setHistory((prevHistory) => [...prevHistory, output]);
   };
 
   return (

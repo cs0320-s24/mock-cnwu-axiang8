@@ -2,7 +2,7 @@ import "../styles/main.css";
 
 interface REPLHistoryProps {
   // TODO: Fill with some shared state tracking all the pushed commands
-  history: string[];
+  history: String[];
 }
 export function REPLHistory(props: REPLHistoryProps) {
   return (
