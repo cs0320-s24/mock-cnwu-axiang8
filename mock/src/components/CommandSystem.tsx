@@ -67,7 +67,9 @@ export class CommandProcessor {
 
   private search = (args: Array<string>): String | JSX.Element => {
     if (this.currentDataSet.length === 0) {
-      return "No dataset loaded. Use 'load_file' command to load a dataset.";
+      return (
+        <p>No dataset loaded. Use 'load_file' command to load a dataset.</p>
+      );
     }
     const column = args[0];
     const value = args.slice(1).join(" ");
@@ -75,7 +77,7 @@ export class CommandProcessor {
     // Check if the column exists in the dataset
     const columnIndex = this.currentDataSet[0].indexOf(column);
     if (columnIndex === -1) {
-      return `Column '${column}' does not exist in the dataset.`;
+      return <p>Column '${column}' does not exist in the dataset.</p>;
     }
 
     const matchingRows = this.currentDataSet
@@ -83,7 +85,11 @@ export class CommandProcessor {
       .map((row) => (Array.isArray(row) ? row : [row])); // Ensure each row is an array
 
     // Call renderTable to generate HTML table
-    return renderTable(matchingRows);
+    return (
+      <div className="search" aria-label="search">
+        {renderTable(matchingRows)}
+      </div>
+    );
   };
 
   private toggleModeCommand = (args: Array<string>): String => {
@@ -103,10 +109,14 @@ export class CommandProcessor {
     if (func) {
       const result = func(args);
       const formattedResult =
-        this.outputMode === "verbose"
-          ? new String(`Command: ${input}\nOutput: ${result}`)
-          : // : new String(result);
-            result;
+        this.outputMode === "verbose" ? (
+          <div>
+            <p>Command: {input}</p>
+            <p>Output: {result}</p>
+          </div>
+        ) : (
+          result
+        );
       return formattedResult;
     }
 

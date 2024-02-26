@@ -16,11 +16,14 @@
   overflow: scroll;
 }
 
-.view {
-  height: 55vh;
-  margin: auto;
-  display: block;
-  overflow: scroll;
+.view table {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.search table {
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .repl-input {
