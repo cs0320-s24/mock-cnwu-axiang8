@@ -1,4 +1,5 @@
-// Adjusting the REPLFunction interface to return String or an array of String arrays
+import { mockedDataSets } from "../data/mockedJson";
+
 export interface REPLFunction {
   (args: Array<string>): String | String[][];
 }
@@ -18,11 +19,11 @@ export class CommandProcessor {
 
   constructor() {
     // Register the load_file command
-    //this.registerCommand("load_file", this.loadFile.bind(this));
+    this.registerCommand("load_file", this.loadFile.bind(this));
     // Register the mode command
     this.registerCommand("mode", this.toggleModeCommand.bind(this));
   }
-  /*
+  
   private loadFile = (args: Array<string>): String => {
     const filePath = args.join(" ");
     if (mockedDataSets.hasOwnProperty(filePath)) {
@@ -32,7 +33,7 @@ export class CommandProcessor {
       return new String("File path does not exist.");
     }
   };
-  */
+  
   private toggleModeCommand = (args: Array<string>): String => {
     // Toggle mode without needing to specify 'brief' or 'verbose'
     if (args.length > 0) {
