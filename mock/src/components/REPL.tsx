@@ -13,10 +13,11 @@ const commandProcessor = new CommandProcessor();
   This is a great top level component for the REPL. It's a good idea to have organize all components in a component folder.
   You don't need to do that for this gearup.
 */
+export type StateAction = string | JSX.Element;
 
 export default function REPL() {
   // TODO: Add some kind of shared state that holds all the commands submitted.
-  const [history, setHistory] = useState<Array<String>>([]);
+  const [history, setHistory] = useState<StateAction[]>([]);
 
   const [outputMode, setOutputMode] = useState<"brief" | "verbose">("brief");
 
@@ -24,8 +25,7 @@ export default function REPL() {
   const processCommand = (commandString: string) => {
     const output = commandProcessor.processCommand(commandString);
 
-    
-    setHistory((prevHistory) => [...prevHistory, output]);
+    setHistory((prevHistory) => [...prevHistory, output as StateAction]);
   };
 
   return (
@@ -35,7 +35,7 @@ export default function REPL() {
       {/* TODO: Update your REPLHistory and REPLInput to take in new shared state as props */}
       <REPLHistory history={history} />
       <hr></hr>
-      
+
       {/*<REPLInput history={history} setHistory={setHistory} />*/}
       <REPLInput processCommand={processCommand} />
     </div>

@@ -1,8 +1,9 @@
 import "../styles/main.css";
+import { StateAction } from './REPL';
 
 interface REPLHistoryProps {
   // TODO: Fill with some shared state tracking all the pushed commands
-  history: String[];
+  history: StateAction[];
 }
 export function REPLHistory(props: REPLHistoryProps) {
   return (

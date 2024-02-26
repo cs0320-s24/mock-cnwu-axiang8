@@ -1,7 +1,23 @@
 import { mockedDataSets } from "../data/mockedJson";
 
 export interface REPLFunction {
-  (args: Array<string>): String | String[] | String[][];
+  (args: Array<string>): String | JSX.Element;
+}
+
+export function renderTable(data: string[][]) {
+  return (
+    <table>
+      <tbody>
+        {data.map((row, rowIndex) => (
+          <tr key={rowIndex}>
+            {row.map((cell, cellIndex) => (
+              <td key={cellIndex}>{cell}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
 }
 
 interface CommandRegistry {
@@ -36,16 +52,20 @@ export class CommandProcessor {
     }
   };
 
-  private view = (args: Array<string>): String[][] | String => {
+  private view = (args: Array<string>): String | JSX.Element => {
     if (mockedDataSets.hasOwnProperty(this.currentFile)) {
       this.currentDataSet = mockedDataSets[this.currentFile];
-      return JSON.stringify(this.currentDataSet, null, 2);
+      return (
+        <div className="view" aria-label="view">
+          {renderTable(this.currentDataSet)}
+        </div>
+      );
     } else {
-      return "Error viewing data set.";
+      return <p>Error viewing data set.</p>;
     }
   };
 
-  private search = (args: Array<string>): String[] | String[][] | String => {
+  private search = (args: Array<string>): String | JSX.Element => {
     if (this.currentDataSet.length === 0) {
       return "No dataset loaded. Use 'load_file' command to load a dataset.";
     }
@@ -55,16 +75,15 @@ export class CommandProcessor {
     // Check if the column exists in the dataset
     const columnIndex = this.currentDataSet[0].indexOf(column);
     if (columnIndex === -1) {
-      return [`Column '${column}' does not exist in the dataset.`];
+      return `Column '${column}' does not exist in the dataset.`;
     }
 
     const matchingRows = this.currentDataSet
       .filter((row, index) => index !== 0 && row[columnIndex].includes(value))
       .map((row) => (Array.isArray(row) ? row : [row])); // Ensure each row is an array
 
-    return matchingRows.length > 0
-      ? matchingRows
-      : [["No matching rows found."]];
+    // Call renderTable to generate HTML table
+    return renderTable(matchingRows);
   };
 
   private toggleModeCommand = (args: Array<string>): String => {
@@ -77,7 +96,7 @@ export class CommandProcessor {
     return new String(`Output mode set to ${this.outputMode}`);
   };
 
-  processCommand(input: string): String {
+  processCommand(input: string): String | JSX.Element {
     const [command, ...args] = input.split(" ");
     const func = this.commands[command];
 
@@ -86,7 +105,8 @@ export class CommandProcessor {
       const formattedResult =
         this.outputMode === "verbose"
           ? new String(`Command: ${input}\nOutput: ${result}`)
-          : new String(result);
+          : // : new String(result);
+            result;
       return formattedResult;
     }
 
