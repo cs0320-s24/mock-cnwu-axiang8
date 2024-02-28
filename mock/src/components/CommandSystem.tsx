@@ -84,6 +84,14 @@ export class CommandProcessor {
       .filter((row, index) => index !== 0 && row[columnIndex].includes(value))
       .map((row) => (Array.isArray(row) ? row : [row])); // Ensure each row is an array
 
+    
+    if (matchingRows.length === 0) {
+      return (
+        <p>
+          No records found matching '{value}' in column '{column}'.
+        </p>
+      );
+    }
     // Call renderTable to generate HTML table
     return (
       <div className="search" aria-label="search">

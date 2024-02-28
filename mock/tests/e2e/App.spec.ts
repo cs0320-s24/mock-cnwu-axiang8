@@ -202,7 +202,7 @@ test("after loading a valid path twice and using the command, view, it displays 
   await page.locator('[aria-label="Command input"]').fill("view");
   await page.locator("text=Submit").click();
 
-  const table = page.locator("table", { hasText: "ID" });
+  const table = page.locator('div[aria-label="view"] table');
   await expect(table).toBeVisible();
   const rows = table.locator("tbody tr");
   await expect(rows).toHaveCount(4);
@@ -226,3 +226,59 @@ test("after loading a valid path twice and using the command, view, it displays 
   await expect(rows.nth(2).locator("td").nth(5)).toHaveText("250000");
 });
 
+test("correctly searches and displays the correct row", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:8001/");
+  await page.locator("text=Login").click();
+  await page
+    .locator('[aria-label="Command input"]')
+    .fill("load_file /data/dataset1.csv");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("view");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("search Zip 12345");
+  await page.locator("text=Submit").click();
+
+  const table = page.locator('div[aria-label="search"] table');
+  const rows = table.locator("tbody tr");
+  await expect(rows).toHaveCount(1);
+});
+
+test("when searching for an invalid column, the correct message shows", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:8001/");
+  await page.locator("text=Login").click();
+  await page
+    .locator('[aria-label="Command input"]')
+    .fill("load_file /data/dataset1.csv");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("view");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("search john 123");
+  await page.locator("text=Submit").click();
+  const messageLocator = page.locator('[class="repl-history"]');
+  await expect(messageLocator).toContainText(
+    "Column '$john' does not exist in the dataset."
+  );
+});
+
+test("when searching for an valid column but invalid value, the correct message shows", async ({
+  page,
+}) => {
+  await page.goto("http://localhost:8001/");
+  await page.locator("text=Login").click();
+  await page
+    .locator('[aria-label="Command input"]')
+    .fill("load_file /data/dataset1.csv");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("view");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("search Zip john");
+  await page.locator("text=Submit").click();
+  const messageLocator = page.locator('[class="repl-history"]');
+  await expect(messageLocator).toContainText(
+    "No records found matching 'john' in column 'Zip'."
+  );
+});
