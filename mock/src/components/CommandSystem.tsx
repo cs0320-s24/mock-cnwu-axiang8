@@ -36,7 +36,7 @@ export class CommandProcessor {
 
   constructor() {
     this.registerCommand("load_file", this.loadFile.bind(this));
-    this.registerCommand("mode", this.toggleModeCommand.bind(this));
+    this.registerCommand("mode", this.mode.bind(this));
     this.registerCommand("view", this.view.bind(this));
     this.registerCommand("search", this.search.bind(this));
   }
@@ -84,7 +84,6 @@ export class CommandProcessor {
       .filter((row, index) => index !== 0 && row[columnIndex].includes(value))
       .map((row) => (Array.isArray(row) ? row : [row])); // Ensure each row is an array
 
-    
     if (matchingRows.length === 0) {
       return (
         <p>
@@ -100,14 +99,14 @@ export class CommandProcessor {
     );
   };
 
-  private toggleModeCommand = (args: Array<string>): String => {
+  private mode = (args: Array<string>): String => {
     if (args.length > 0) {
       return new String(
         "Usage: 'mode' to toggle between brief and verbose output."
       );
     }
     this.outputMode = this.outputMode === "brief" ? "verbose" : "brief";
-    return new String(`Output mode set to ${this.outputMode}`);
+    return new String(`Mode set to ${this.outputMode}`);
   };
 
   processCommand(input: string): String | JSX.Element {
@@ -127,7 +126,6 @@ export class CommandProcessor {
         );
       return formattedResult;
     }
-
     return new String("Unknown command");
   }
 }

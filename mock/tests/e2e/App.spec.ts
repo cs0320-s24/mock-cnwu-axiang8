@@ -10,9 +10,10 @@ import { a } from "vitest/dist/suite-UrZdHRff";
  */
 
 // If you needed to do something before every test case...
-test.beforeEach(() => {
+test.beforeEach(async ({ page }) => {
   // ... you'd put it here.
   // TODO: Is there something we need to do before every test case to avoid repeating code?
+  await page.goto("http://localhost:8001/");
 });
 
 /**
@@ -23,13 +24,11 @@ test.beforeEach(() => {
  */
 test("on page load, i see a login button", async ({ page }) => {
   // Notice: http, not https! Our front-end is not set up for HTTPs.
-  await page.goto("http://localhost:8001/");
   await expect(page.getByLabel("Login")).toBeVisible();
 });
 
 test("on page load, i dont see the input box until login", async ({ page }) => {
   // Notice: http, not https! Our front-end is not set up for HTTPs.
-  await page.goto("http://localhost:8001/");
   await expect(page.getByLabel("Sign Out")).not.toBeVisible();
   await expect(page.getByLabel("Command input")).not.toBeVisible();
 
@@ -41,7 +40,6 @@ test("on page load, i dont see the input box until login", async ({ page }) => {
 
 test("after I type into the input box, its text changes", async ({ page }) => {
   // Step 1: Navigate to a URL
-  await page.goto("http://localhost:8001/");
   await page.getByLabel("Login").click();
 
   // Step 2: Interact with the page
@@ -57,7 +55,6 @@ test("after I type into the input box, its text changes", async ({ page }) => {
 
 test("on page load, i see a button", async ({ page }) => {
   // TODO WITH TA: Fill this in!
-  await page.goto("http://localhost:8001/");
   await page.getByLabel("Login").click();
   await expect(page.locator("text=Submit")).toBeVisible();
 });
@@ -65,37 +62,32 @@ test("on page load, i see a button", async ({ page }) => {
 test("after I enter the command mode, it gets switched from brief to verbose", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8001/");
   await page.locator("text=Login").click();
   await page.locator('[aria-label="Command input"]').fill("mode");
   await page.locator("text=Submit").click();
 
   const messageLocator = page.locator('[class="repl-history"]');
   await expect(messageLocator).toContainText("Command: mode");
-  await expect(messageLocator).toContainText(
-    "Output: Output mode set to verbose"
-  );
+  await expect(messageLocator).toContainText("Output: Mode set to verbose");
 });
 
 test("after I enter the command mode, it gets switched from verbose to brief", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8001/");
-  await page.locator("text=Login").click(); // Assuming login is necessary
+  await page.locator("text=Login").click();
   await page.locator('[aria-label="Command input"]').fill("mode");
   await page.locator("text=Submit").click();
   await page.locator('[aria-label="Command input"]').fill("mode");
   await page.locator("text=Submit").click();
 
   const messageLocator = page.locator('[class="repl-history"]');
-  await expect(messageLocator).toContainText("Output mode set to brief");
+  await expect(messageLocator).toContainText("Mode set to brief");
 });
 
 test("after entering an incorrect mode command, it displays the correct error", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8001/");
-  await page.locator("text=Login").click(); // Assuming login is necessary
+  await page.locator("text=Login").click();
   await page.locator('[aria-label="Command input"]').fill("mode john");
   await page.locator("text=Submit").click();
 
@@ -108,7 +100,6 @@ test("after entering an incorrect mode command, it displays the correct error", 
 test("after loading a valid path, it displays the correct message", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8001/");
   await page.locator("text=Login").click();
   await page
     .locator('[aria-label="Command input"]')
@@ -124,7 +115,6 @@ test("after loading a valid path, it displays the correct message", async ({
 test("after loading a valid path in verbose, it displays the correct message", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8001/");
   await page.locator("text=Login").click();
   await page.locator('[aria-label="Command input"]').fill("mode");
   await page.locator("text=Submit").click();
@@ -145,7 +135,6 @@ test("after loading a valid path in verbose, it displays the correct message", a
 test("after loading a invalid path, it displays the correct message", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8001/");
   await page.locator("text=Login").click();
   await page
     .locator('[aria-label="Command input"]')
@@ -159,7 +148,6 @@ test("after loading a invalid path, it displays the correct message", async ({
 test("after loading a valid path and using the command, view, it displays the csv data", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8001/");
   await page.locator("text=Login").click();
   await page
     .locator('[aria-label="Command input"]')
@@ -189,7 +177,6 @@ test("after loading a valid path and using the command, view, it displays the cs
 test("after loading a valid path twice and using the command, view, it displays the coorrect csv data", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8001/");
   await page.locator("text=Login").click();
   await page
     .locator('[aria-label="Command input"]')
@@ -226,10 +213,7 @@ test("after loading a valid path twice and using the command, view, it displays 
   await expect(rows.nth(2).locator("td").nth(5)).toHaveText("250000");
 });
 
-test("correctly searches and displays the correct row", async ({
-  page,
-}) => {
-  await page.goto("http://localhost:8001/");
+test("correctly searches and displays the correct row", async ({ page }) => {
   await page.locator("text=Login").click();
   await page
     .locator('[aria-label="Command input"]')
@@ -248,7 +232,6 @@ test("correctly searches and displays the correct row", async ({
 test("when searching for an invalid column, the correct message shows", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8001/");
   await page.locator("text=Login").click();
   await page
     .locator('[aria-label="Command input"]')
@@ -267,7 +250,6 @@ test("when searching for an invalid column, the correct message shows", async ({
 test("when searching for an valid column but invalid value, the correct message shows", async ({
   page,
 }) => {
-  await page.goto("http://localhost:8001/");
   await page.locator("text=Login").click();
   await page
     .locator('[aria-label="Command input"]')
@@ -282,3 +264,6 @@ test("when searching for an valid column but invalid value, the correct message 
     "No records found matching 'john' in column 'Zip'."
   );
 });
+
+//test on data with one column, data with one row
+//test for searching multiple files (call load two times)
