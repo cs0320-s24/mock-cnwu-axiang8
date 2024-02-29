@@ -21,4 +21,5 @@ export const mockedDataSets: MockedDataSets = {
     ["ID", "Address", "City", "State", "Zip", "Price"],
     ["7", "135 Ninth St", "Palo Alto", "CA", "94303", "160000"],
   ],
+  "/data/dataset4.csv": [["ID"], ["7"], ["8"]],
 };

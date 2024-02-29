@@ -13,7 +13,7 @@ import { a } from "vitest/dist/suite-UrZdHRff";
 test.beforeEach(async ({ page }) => {
   // ... you'd put it here.
   // TODO: Is there something we need to do before every test case to avoid repeating code?
-  await page.goto("http://localhost:8001/");
+  await page.goto("http://localhost:8000/");
 });
 
 /**
@@ -138,7 +138,7 @@ test("after loading a invalid path, it displays the correct message", async ({
   await page.locator("text=Login").click();
   await page
     .locator('[aria-label="Command input"]')
-    .fill("load_file /data/dataset3.csv");
+    .fill("load_file /data/dataset5.csv");
   await page.locator("text=Submit").click();
 
   const messageLocator = page.locator('[class="repl-history"]');
@@ -227,6 +227,12 @@ test("correctly searches and displays the correct row", async ({ page }) => {
   const table = page.locator('div[aria-label="search"] table');
   const rows = table.locator("tbody tr");
   await expect(rows).toHaveCount(1);
+  await expect(rows.nth(0).locator("td").nth(0)).toHaveText("1");
+  await expect(rows.nth(0).locator("td").nth(1)).toHaveText("123 Main St");
+  await expect(rows.nth(0).locator("td").nth(2)).toHaveText("Anytown");
+  await expect(rows.nth(0).locator("td").nth(3)).toHaveText("StateA");
+  await expect(rows.nth(0).locator("td").nth(4)).toHaveText("12345");
+  await expect(rows.nth(0).locator("td").nth(5)).toHaveText("200000");
 });
 
 test("when searching for an invalid column, the correct message shows", async ({
@@ -266,4 +272,79 @@ test("when searching for an valid column but invalid value, the correct message 
 });
 
 //test on data with one column, data with one row
+test("correctly searches and displays the correct output when testing with one column", async ({ page }) => {
+  await page.locator("text=Login").click();
+  await page
+    .locator('[aria-label="Command input"]')
+    .fill("load_file /data/dataset4.csv");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("view");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("search ID 7");
+  await page.locator("text=Submit").click();
+
+  const table = page.locator('div[aria-label="search"] table');
+  const rows = table.locator("tbody tr");
+  await expect(rows).toHaveCount(1);
+});
+
+test("correctly searches and displays the correct output when testing with one row", async ({
+  page,
+}) => {
+  await page.locator("text=Login").click();
+  await page
+    .locator('[aria-label="Command input"]')
+    .fill("load_file /data/dataset3.csv");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("view");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("search City Palo Alto");
+  await page.locator("text=Submit").click();
+
+  const table = page.locator('div[aria-label="search"] table');
+  const rows = table.locator("tbody tr");
+  await expect(rows).toHaveCount(1);
+  await expect(rows.nth(0).locator("td").nth(0)).toHaveText("7");
+  await expect(rows.nth(0).locator("td").nth(1)).toHaveText("135 Ninth St");
+  await expect(rows.nth(0).locator("td").nth(2)).toHaveText("Palo Alto");
+  await expect(rows.nth(0).locator("td").nth(3)).toHaveText("CA");
+  await expect(rows.nth(0).locator("td").nth(4)).toHaveText("94303");
+  await expect(rows.nth(0).locator("td").nth(5)).toHaveText("160000");
+});
+
 //test for searching multiple files (call load two times)
+test("searches correctly when loading multiple files", async ({ page }) => {
+  await page.locator("text=Login").click();
+  await page
+    .locator('[aria-label="Command input"]')
+    .fill("load_file /data/dataset2.csv");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("search City Hilltown");
+  await page.locator("text=Submit").click();
+
+  const table = page.locator('div[aria-label="search"] table');
+  const rows = table.locator("tbody tr");
+  await expect(rows).toHaveCount(1);
+  await expect(rows.nth(0).locator("td").nth(0)).toHaveText("4");
+  await expect(rows.nth(0).locator("td").nth(1)).toHaveText("101 Elm St");
+  await expect(rows.nth(0).locator("td").nth(2)).toHaveText("Hilltown");
+  await expect(rows.nth(0).locator("td").nth(3)).toHaveText("StateA");
+  await expect(rows.nth(0).locator("td").nth(4)).toHaveText("54321");
+  await expect(rows.nth(0).locator("td").nth(5)).toHaveText("180000");
+
+  await page
+    .locator('[aria-label="Command input"]')
+    .fill("load_file /data/dataset1.csv");
+  await page.locator("text=Submit").click();
+  await page.locator('[aria-label="Command input"]').fill("search Address 123 Main St");
+  await page.locator("text=Submit").click();
+  const table1 = page.locator('div[aria-label="search"] table');
+  const rows1 = table.locator("tbody tr");
+  await expect(rows1).toHaveCount(2);
+  await expect(rows1.nth(1).locator("td").nth(0)).toHaveText("1");
+  await expect(rows1.nth(1).locator("td").nth(1)).toHaveText("123 Main St");
+  await expect(rows1.nth(1).locator("td").nth(2)).toHaveText("Anytown");
+  await expect(rows1.nth(1).locator("td").nth(3)).toHaveText("StateA");
+  await expect(rows1.nth(1).locator("td").nth(4)).toHaveText("12345");
+  await expect(rows1.nth(1).locator("td").nth(5)).toHaveText("200000");
+});
