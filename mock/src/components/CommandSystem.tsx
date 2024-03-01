@@ -1,12 +1,20 @@
 import { mockedDataSets } from "../data/mockedJson";
 
-
-//allows the developer to create new functions if needed, as long as it implements this interface and is added to the CommandRegistry
+/**
+ * Defines the interface for functions that can be executed in the REPL (Read-Eval-Print Loop).
+ * These functions take an array of strings as arguments and return a string or a JSX.Element.
+ */
 export interface REPLFunction {
   (args: Array<string>): String | JSX.Element;
 }
 
-//helper function to convert array of strings into an HTML table to return in view and search
+/**
+ * Helper function to convert a 2D array of strings (representing tabular data) into an HTML table.
+ * This is useful for displaying data in a structured format in the UI.
+ *
+ * @param data - A 2D array where each inner array represents a row of data.
+ * @return A JSX.Element representing the rendered HTML table.
+ */
 export function renderTable(data: string[][]) {
   return (
     <table>
@@ -23,22 +31,37 @@ export function renderTable(data: string[][]) {
   );
 }
 
-//maps commands as strings to the respective functions that needs to be called when the command is inputted by the user.
+/**
+ * Maps command names to their corresponding functions. This enables a flexible and extensible
+ * way to add or modify commands without altering the core logic of command processing.
+ */
 interface CommandRegistry {
   [commandName: string]: REPLFunction;
 }
 
+/**
+ * Processes commands inputted by the user, facilitating interaction with datasets and the application.
+ * Supports loading files, viewing data, searching within datasets, and toggling output modes.
+ */
 export class CommandProcessor {
   private commands: CommandRegistry = {};
   private outputMode: "brief" | "verbose" = "brief";
   private currentFile = "";
   private currentDataSet: string[][] | string[] = [];
 
+  /**
+   * Registers a new command in the command registry.
+   *
+   * @param name - The name of the command.
+   * @param func - The function to execute when the command is called.
+   */
   registerCommand(name: string, func: REPLFunction) {
     this.commands[name] = func;
   }
 
-  //developer can add commands by registering them here
+  /**
+   * Initializes the command processor and registers default commands.
+   */
   constructor() {
     this.registerCommand("load_file", this.loadFile.bind(this));
     this.registerCommand("mode", this.mode.bind(this));
@@ -46,7 +69,12 @@ export class CommandProcessor {
     this.registerCommand("search", this.search.bind(this));
   }
 
-  //loadFile function
+  /**
+   * Loads a dataset from the specified file path.
+   *
+   * @param args - Array containing the file path as its elements.
+   * @return A string indicating whether the dataset was successfully loaded or not.
+   */
   private loadFile = (args: Array<string>): String => {
     const filePath = args.join(" ");
     if (mockedDataSets.hasOwnProperty(filePath)) {
@@ -58,7 +86,12 @@ export class CommandProcessor {
     }
   };
 
-  //view function
+  /**
+   * Displays the currently loaded dataset in a tabular format.
+   *
+   * @param args - Unused parameter, included to match the REPLFunction interface.
+   * @return A JSX.Element representing the data table or a message indicating no dataset is loaded.
+   */
   private view = (args: Array<string>): String | JSX.Element => {
     if (mockedDataSets.hasOwnProperty(this.currentFile)) {
       this.currentDataSet = mockedDataSets[this.currentFile];
@@ -74,7 +107,12 @@ export class CommandProcessor {
     }
   };
 
-  //search function
+  /**
+   * Searches for records in the loaded dataset that match the criteria specified by the user.
+   *
+   * @param args - The first element is the column to search in, followed by the search query.
+   * @return A JSX.Element displaying the matching records or a message if no matches are found.
+   */
   private search = (args: Array<string>): String | JSX.Element => {
     if (this.currentDataSet.length === 0) {
       return (
@@ -108,7 +146,14 @@ export class CommandProcessor {
       </div>
     );
   };
-//mode function to toggle between brief and verbose modes
+
+  /**
+   * Toggles the output mode between brief and verbose. In verbose mode, additional information
+   * about the command executed and its output is displayed.
+   *
+   * @param args - Unused parameter, included to match the REPLFunction interface.
+   * @return A string indicating the new output mode.
+   */
   private mode = (args: Array<string>): String => {
     if (args.length > 0) {
       return new String(
@@ -119,7 +164,12 @@ export class CommandProcessor {
     return new String(`Mode set to ${this.outputMode}`);
   };
 
-  //function to run the command that is inputted as a String and generate an output
+  /**
+   * Processes an input command by looking it up in the registry and executing the associated function.
+   *
+   * @param input - The command input string from the user.
+   * @return The result of executing the command, which can be a string or JSX.Element.
+   */
   processCommand(input: string): String | JSX.Element {
     const [command, ...args] = input.split(" ");
     const func = this.commands[command];
