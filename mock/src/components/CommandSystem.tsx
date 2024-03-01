@@ -1,9 +1,12 @@
 import { mockedDataSets } from "../data/mockedJson";
 
+
+//allows the developer to create new functions if needed, as long as it implements this interface and is added to the CommandRegistry
 export interface REPLFunction {
   (args: Array<string>): String | JSX.Element;
 }
 
+//helper function to convert array of strings into an HTML table to return in view and search
 export function renderTable(data: string[][]) {
   return (
     <table>
@@ -20,6 +23,7 @@ export function renderTable(data: string[][]) {
   );
 }
 
+//maps commands as strings to the respective functions that needs to be called when the command is inputted by the user.
 interface CommandRegistry {
   [commandName: string]: REPLFunction;
 }
@@ -34,6 +38,7 @@ export class CommandProcessor {
     this.commands[name] = func;
   }
 
+  //developer can add commands by registering them here
   constructor() {
     this.registerCommand("load_file", this.loadFile.bind(this));
     this.registerCommand("mode", this.mode.bind(this));
@@ -41,6 +46,7 @@ export class CommandProcessor {
     this.registerCommand("search", this.search.bind(this));
   }
 
+  //loadFile function
   private loadFile = (args: Array<string>): String => {
     const filePath = args.join(" ");
     if (mockedDataSets.hasOwnProperty(filePath)) {
@@ -52,6 +58,7 @@ export class CommandProcessor {
     }
   };
 
+  //view function
   private view = (args: Array<string>): String | JSX.Element => {
     if (mockedDataSets.hasOwnProperty(this.currentFile)) {
       this.currentDataSet = mockedDataSets[this.currentFile];
@@ -67,6 +74,7 @@ export class CommandProcessor {
     }
   };
 
+  //search function
   private search = (args: Array<string>): String | JSX.Element => {
     if (this.currentDataSet.length === 0) {
       return (
@@ -100,7 +108,7 @@ export class CommandProcessor {
       </div>
     );
   };
-
+//mode function to toggle between brief and verbose modes
   private mode = (args: Array<string>): String => {
     if (args.length > 0) {
       return new String(
@@ -111,6 +119,7 @@ export class CommandProcessor {
     return new String(`Mode set to ${this.outputMode}`);
   };
 
+  //function to run the command that is inputted as a String and generate an output
   processCommand(input: string): String | JSX.Element {
     const [command, ...args] = input.split(" ");
     const func = this.commands[command];

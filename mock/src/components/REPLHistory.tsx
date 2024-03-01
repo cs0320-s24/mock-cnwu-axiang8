@@ -1,8 +1,13 @@
 import "../styles/main.css";
-import { StateAction } from './REPL';
+import { StateAction } from "./REPL";
+
+/**
+ * In the REPLHistory component, there is an interface that contains a
+ * StateAction array (StateAction being a export type that can either be a String or JSX.Element),
+ *  and goes through all the StateAction outputs (what the functions have returned) in the array and returns them.
+ */
 
 interface REPLHistoryProps {
-  // TODO: Fill with some shared state tracking all the pushed commands
   history: StateAction[];
 }
 export function REPLHistory(props: REPLHistoryProps) {
