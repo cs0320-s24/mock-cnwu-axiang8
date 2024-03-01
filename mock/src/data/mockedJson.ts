@@ -19,7 +19,7 @@ export const mockedDataSets: MockedDataSets = {
   ],
   "/data/dataset3.csv": [
     ["ID", "Address", "City", "State", "Zip", "Price"],
-    ["7", "135 Ninth St", "Palo Alto", "CA", "94303", "160000"],
+    ["7", "135 Ninth St", "Palo Alto", "CA", "94303", "160000"], //one row
   ],
-  "/data/dataset4.csv": [["ID"], ["7"], ["8"]],
+  "/data/dataset4.csv": [["ID"], ["7"], ["8"]], //one column
 };

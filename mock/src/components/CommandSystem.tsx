@@ -61,7 +61,9 @@ export class CommandProcessor {
         </div>
       );
     } else {
-      return <p>Error viewing data set.</p>;
+      return (
+        <p>No dataset loaded. Use 'load_file' command to load a dataset.</p>
+      );
     }
   };
 
