@@ -21,7 +21,7 @@ test("on page load, i see a login button", async ({ page }) => {
   await expect(page.getByLabel("Login")).toBeVisible();
 });
 
-test("on page load, i dont see the input box until login", async ({ page }) => {
+test("on page load, i dont see the command box until login", async ({ page }) => {
   await expect(page.getByLabel("Sign Out")).not.toBeVisible();
   await expect(page.getByLabel("Command input")).not.toBeVisible();
 
@@ -30,7 +30,7 @@ test("on page load, i dont see the input box until login", async ({ page }) => {
   await expect(page.getByLabel("Command input")).toBeVisible();
 });
 
-test("after I type into the input box, its text changes", async ({ page }) => {
+test("after I type into the command box, its text changes", async ({ page }) => {
   await page.getByLabel("Login").click();
 
   await page.getByLabel("Command input").click();
@@ -222,7 +222,6 @@ test("when searching for an valid column but invalid value, the correct message 
   );
 });
 
-//test on data with one column, data with one row
 test("correctly searches and displays the correct output when testing with one column", async ({
   page,
 }) => {

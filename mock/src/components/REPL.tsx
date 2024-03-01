@@ -24,7 +24,6 @@ export default function REPL() {
   // Function to process commands
   const processCommand = (commandString: string) => {
     const output = commandProcessor.processCommand(commandString);
-
     setHistory((prevHistory) => [...prevHistory, output as StateAction]);
   };
 

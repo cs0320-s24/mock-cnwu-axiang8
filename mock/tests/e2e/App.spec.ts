@@ -104,7 +104,7 @@ test("searches correctly when loading multiple files", async ({ page }) => {
   await expect(rows1.nth(1).locator("td").nth(5)).toHaveText("200000");
 });
 
-//load -> view -> search correctly
+//load -> view -> search, load -> view -> search correctly
 test("correctly loads, views, and searches two times", async ({ page }) => {
   await page.locator("text=Login").click();
   await page
